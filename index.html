@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Run Clubs</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #events { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Find Running Clubs Near You</h1>
+    <button onclick="getLocation()">Find Events</button>
+    <p id="status"></p>
+    <div id="events"></div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                document.getElementById("status").innerText = "Fetching location...";
+            } else {
+                document.getElementById("status").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+            document.getElementById("status").innerText = `Location: ${latitude}, ${longitude}`;
+            fetchEvents(latitude, longitude);
+        }
+
+        function showError(error) {
+            let status = document.getElementById("status");
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    status.innerText = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    status.innerText = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    status.innerText = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    status.innerText = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        function fetchEvents(lat, lon) {
+            // Simulated API response (replace with real API call)
+            let events = [
+                { name: "Morning Joggers", location: "Central Park", time: "6:00 AM" },
+                { name: "Sunset Sprinters", location: "Riverside Trail", time: "7:00 PM" }
+            ];
+
+            let eventList = "<h2>Upcoming Run Events</h2>";
+            events.forEach(event => {
+                eventList += `<p><strong>${event.name}</strong> - ${event.location} at ${event.time}</p>`;
+            });
+
+            document.getElementById("events").innerHTML = eventList;
+        }
+    </script>
+</body>
+</html>
