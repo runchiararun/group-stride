@@ -16,54 +16,32 @@
     <div id="events"></div>
 
     <script>
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
-                document.getElementById("status").innerText = "Fetching location...";
-            } else {
-                document.getElementById("status").innerText = "Geolocation is not supported by this browser.";
+        // Function to fetch and display JSON data
+        async function loadJSON() {
+            try {
+                let response = await fetch('run_info.json'); // Fetch JSON file
+                let data = await response.json(); // Convert response to JSON
+                displayJSON(data); // Call function to display data
+            } catch (error) {
+                console.error("Error loading JSON:", error);
             }
         }
 
-        function showPosition(position) {
-            let latitude = position.coords.latitude;
-            let longitude = position.coords.longitude;
-            document.getElementById("status").innerText = `Location: ${latitude}, ${longitude}`;
-            fetchEvents(latitude, longitude);
-        }
+        // Function to display JSON in HTML
+        function displayJSON(data) {
+            let outputDiv = document.getElementById("output");
+            let html = "<ul>";
 
-        function showError(error) {
-            let status = document.getElementById("status");
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    status.innerText = "User denied the request for Geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    status.innerText = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    status.innerText = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    status.innerText = "An unknown error occurred.";
-                    break;
-            }
-        }
-
-        function fetchEvents(lat, lon) {
-            // Simulated API response (replace with real API call)
-            let events = [
-                { name: "Morning Joggers", location: "Central Park", time: "6:00 AM" },
-                { name: "Sunset Sprinters", location: "Riverside Trail", time: "7:00 PM" }
-            ];
-
-            let eventList = "<h2>Upcoming Run Events</h2>";
-            events.forEach(event => {
-                eventList += `<p><strong>${event.name}</strong> - ${event.location} at ${event.time}</p>`;
+            data.forEach(run => {
+                html += `<li><strong>${run.name}</strong> - ${run.location} at ${run.time}</li>`;
             });
 
-            document.getElementById("events").innerHTML = eventList;
+            html += "</ul>";
+            outputDiv.innerHTML = html;
         }
+
+        // Load JSON when the page loads
+        loadJSON();
     </script>
 </body>
 </html>
