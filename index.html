@@ -1,47 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nearby Run Clubs</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #events { margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <h1>Find Running Clubs Near You</h1>
-    <button onclick="getLocation()">Find Events</button>
-    <p id="status"></p>
-    <div id="events"></div>
-
-    <script>
-        // Function to fetch and display JSON data
-        async function loadJSON() {
-            try {
-                let response = await fetch('run_info.json'); // Fetch JSON file
-                let data = await response.json(); // Convert response to JSON
-                displayJSON(data); // Call function to display data
-            } catch (error) {
-                console.error("Error loading JSON:", error);
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Display JSON in HTML</title>
+    </head>
+    <body>
+        <h2>Group Runs</h2>
+        <div id="output"></div>
+    
+        <script>
+            // Function to fetch and display JSON data
+            async function loadJSON() {
+                try {
+                    let response = await fetch('run_info.json'); // Fetch JSON file
+                    let data = await response.json(); // Convert response to JSON
+                    displayJSON(data); // Call function to display data
+                } catch (error) {
+                    console.error("Error loading JSON:", error);
+                }
             }
-        }
+            
+            
 
-        // Function to display JSON in HTML
-        function displayJSON(data) {
-            let outputDiv = document.getElementById("output");
-            let html = "<ul>";
-
-            data.forEach(run => {
-                html += `<li><strong>${run.name}</strong> - ${run.location} at ${run.time}</li>`;
-            });
-
-            html += "</ul>";
-            outputDiv.innerHTML = html;
-        }
-
-        // Load JSON when the page loads
-        loadJSON();
-    </script>
-</body>
+            // Function to display JSON in HTML
+            function displayJSON(data) {
+                
+                // Sort events by date (soonest to latest)
+                data.sort((a, b) => new Date(a.date) - new Date(b.date));
+                let outputDiv = document.getElementById("output");
+                let html = "<ul>";
+                data.forEach(run => {
+                    html += `<li><strong>${run.name}</strong> with <strong><a href="${run.club.website}" target = "_blank">${run.club.name}</a> </strong> - <a href="${run.location}" target = "_blank"> Run starts here</a> on ${run.date} at ${run.time}</li>`;
+                });
+                html += "</ul>";
+                outputDiv.innerHTML = html;
+            }
+    
+            // Load JSON when the page loads
+            loadJSON();
+        </script>
+    </body>
 </html>
