@@ -1,78 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Display JSON in HTML</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h2>Group Runs</h2>
-        <div id="output"></div> <!-- Correct id is "output" here -->
-    
-        <script>
-            async function LoadJson() {
-                try {
-                    console.log("Fetching JSON...");
-                    const response = await fetch("run_info.json");
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Display JSON in HTML</title>
+  <link rel="stylesheet" href="style.css">
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet/dist/leaflet.css"
+    />
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js">
+    </script>
+</head>
+<body>
 
-                    const jsonData = await response.json();
-                    console.log("Loaded JSON data:", jsonData); // Log the data to console
-                    displayJSON(jsonData);
-                } catch (error) {
-                    console.error("Error loading JSON:", error);
-                    document.getElementById("output").innerHTML = `<p>Error loading data: ${error.message}. Check the console.</p>`;
-                }
-            }
-
-            function displayJSON(jsonData) {
-                const outputDiv = document.getElementById("output"); // Corrected id
-                outputDiv.innerHTML = ""; // Clear any existing content
-
-                if (!jsonData.clubs || jsonData.clubs.length === 0) {
-                    console.log("No clubs found in JSON.");
-                    outputDiv.innerHTML = "<p>No run clubs found in the data.</p>";
-                    return;
-                }
-
-                console.log(`Found ${jsonData.clubs.length} clubs.`);
-
-                jsonData.clubs.forEach(club => {
-                    console.log(`Processing club: ${club.name}`);
-
-                    let clubDiv = document.createElement("div");
-                    clubDiv.innerHTML = `<h2>${club.name}</h2>
-                        <p><a href="${club.website}" target="_blank">Visit Website</a></p>
-                        <ul>`;
-
-                    if (!club.events || club.events.length === 0) {
-                        console.log(`No events found for club: ${club.name}`);
-                        clubDiv.innerHTML += `<p>No events available.</p>`;
-                    } else {
-                        club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                        club.events.forEach(event => {
-                            console.log(`Adding event: ${event.name} on ${event.date}`);
-
-                            clubDiv.innerHTML += `<li>
-                                <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
-                                <a href="${event.location}" target="_blank">Event Location</a><br>
-                                <em>Distance Options: ${event.distance_options ? event.distance_options.join(", ") : "N/A"}</em>
-                            </li>`;
-                        });
-                    }
-
-                    clubDiv.innerHTML += `</ul>`;
-                    outputDiv.appendChild(clubDiv);
-                });
-            }
-
-            // Load JSON when the page loads
-            document.addEventListener("DOMContentLoaded", LoadJson);
-        </script>
-    </body>
-</html>
+    <div id="event-list">
+      <h2>Group Runs</h2>
+      <label for="clubFilter">Filter by Run Club:</label>
+      <select id="clubFilter">
+        <option value="all">All Clubs</option>
+      </select>
+      <div id="output"></div>
+    </div>
+  
+    <div id="map"></div>
+  
+    <script>
+      let map;
+      let allClubs = [];
+      let markers = [];
+  
+      async function LoadJson() {
+        try {
+          const response = await fetch("run_info.json");
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          const jsonData = await response.json();
+  
+          allClubs = jsonData.clubs || [];
+          initMap();
+          populateClubFilter(allClubs);
+          displayData(allClubs);
+  
+        } catch (error) {
+          console.error("Error loading JSON:", error);
+          document.getElementById("output").innerHTML = `<p>Error loading data: ${error.message}</p>`;
+        }
+      }
+  
+      function initMap() {
+        map = L.map('map').setView([39.5, -98.35], 4); // Center on USA
+  
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+      }
+  
+      function populateClubFilter(clubs) {
+        const filter = document.getElementById("clubFilter");
+  
+        clubs.forEach(club => {
+          const option = document.createElement("option");
+          option.value = club.name;
+          option.textContent = club.name;
+          filter.appendChild(option);
+        });
+  
+        filter.addEventListener("change", () => {
+          const selected = filter.value;
+          const filteredClubs = selected === "all" ? allClubs : allClubs.filter(c => c.name === selected);
+          displayData(filteredClubs);
+        });
+      }
+  
+      function clearMarkers() {
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+      }
+  
+      function displayData(clubs) {
+        const outputDiv = document.getElementById("output");
+        outputDiv.innerHTML = "";
+        clearMarkers();
+  
+        clubs.forEach(club => {
+          const section = document.createElement("div");
+          section.classList.add("club-section");
+  
+          section.innerHTML = `<h3>${club.name}</h3>
+            <p><a href="${club.website}" target="_blank">Visit Website</a></p><ul>`;
+  
+          if (club.events && club.events.length > 0) {
+            club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+            club.events.forEach(event => {
+              section.innerHTML += `
+                <li>
+                  <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
+                  <a href="${event.location}" target="_blank">Event Location</a><br>
+                  <em>Distance: ${event.distance_options?.join(", ") || "N/A"}</em>
+                </li>
+              `;
+  
+              if (event.latitude && event.longitude) {
+                const popupContent = `
+                  <strong>${event.name}</strong><br>
+                  ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
+                  <a href="${event.location}" target="_blank">Location</a>
+                `;
+  
+                const marker = L.marker([event.latitude, event.longitude])
+                  .addTo(map)
+                  .bindPopup(popupContent);
+  
+                markers.push(marker);
+              }
+            });
+  
+            section.innerHTML += `</ul>`;
+          } else {
+            section.innerHTML += `<p>No events available.</p>`;
+          }
+  
+          outputDiv.appendChild(section);
+        });
+      }
+  
+      document.addEventListener("DOMContentLoaded", LoadJson);
+    </script>
+  </body>
+  </html>

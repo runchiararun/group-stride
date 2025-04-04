@@ -1,3 +1,41 @@
 h2 {
     color: blue;
 }
+#club-filter {
+    margin-bottom: 20px;
+    padding: 8px;
+    font-size: 16px;
+  }
+body {
+display: flex;
+font-family: sans-serif;
+margin: 0;
+}
+
+#event-list {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+max-height: 100vh;
+}
+
+#map {
+flex: 1;
+height: 100vh;
+}
+
+h2 {
+margin-top: 0;
+}
+
+.club-section {
+margin-bottom: 30px;
+}
+
+ul {
+padding-left: 20px;
+}
+
+li {
+margin-bottom: 15px;
+}
