@@ -1,38 +1,25 @@
-[
-    {"name": "Wednesday City Run",
-    "date": "04-02-2025",
-    "time": "06:30 PM",
-    "location": "https://www.google.com/maps/place/Allegheny+City+Brewing/@40.4537827,-80.0028532,17z/data=!3m1!4b1!4m6!3m5!1s0x8834f3fa7e172083:0x5b286cafaa8c9075!8m2!3d40.4537786!4d-80.0002783!16s%2Fg%2F11clw2989j?entry=ttu&g_ep=EgoyMDI1MDMyNS4xIKXMDSoASAFQAw%3D%3D",
-    "distance_options": ["3 miles", "5 miles"],
-    "club": {
-      "name": "City Of Bridges Run Club",
-      "contact_email": "cityofbridgesrunclub@gmail.com",
-      "website": "https://www.cityofbridgesrunclub.com"
-    }
-    },
-
-    {"name": "Monday Track Attack",
-    "date": "03-31-2025",
-    "time": "06:30 PM",
-    "location": "https://www.google.com/maps/place/1+Overlook+Dr,+Pittsburgh,+PA+15217/@40.4329152,-79.9506021,17z/data=!3m1!4b1!4m6!3m5!1s0x8834f18c4738fac5:0xf6010c3eb7cac401!8m2!3d40.4329112!4d-79.9457312!16s%2Fg%2F11j8sfr9ql?entry=ttu&g_ep=EgoyMDI1MDMyNS4xIKXMDSoASAFQAw%3D%3D",
-    "distance_options": ["Varied based on the workout!"],
-    "club": {
-      "name": "City Of Bridges Run Club",
-      "contact_email": "cityofbridgesrunclub@gmail.com",
-      "website": "https://www.cityofbridgesrunclub.com"
-    }
-    },
-
-    {"name": "Monday Track Attack",
-    "date": "03-22-2025",
-    "time": "06:30 PM",
-    "location": "https://www.google.com/maps/place/1+Overlook+Dr,+Pittsburgh,+PA+15217/@40.4329152,-79.9506021,17z/data=!3m1!4b1!4m6!3m5!1s0x8834f18c4738fac5:0xf6010c3eb7cac401!8m2!3d40.4329112!4d-79.9457312!16s%2Fg%2F11j8sfr9ql?entry=ttu&g_ep=EgoyMDI1MDMyNS4xIKXMDSoASAFQAw%3D%3D",
-    "distance_options": ["Varied based on the workout!"],
-    "club": {
-      "name": "City Of Bridges Run Club",
-      "contact_email": "cityofbridgesrunclub@gmail.com",
-      "website": "https://www.cityofbridgesrunclub.com"
-    }
-    }
-]
-  
+{
+    "clubs": [
+        {
+            "name": "City Of Bridges Run Club",
+            "contact_email": "cityofbridgesrunclub@gmail.com",
+            "website": "https://www.cityofbridgesrunclub.com",
+            "events": [
+                {
+                    "name": "Wednesday City Run",
+                    "date": "2025-04-02",
+                    "time": "06:30 PM",
+                    "location": "https://www.google.com/maps/place/Allegheny+City+Brewing/",
+                    "distance_options": ["3 miles", "5 miles"]
+                },
+                {
+                    "name": "Monday Track Attack",
+                    "date": "2025-03-31",
+                    "time": "06:30 PM",
+                    "location": "https://www.google.com/maps/place/1+Overlook+Dr/",
+                    "distance_options": ["Varied based on the workout!"]
+                }
+            ]
+        }
+    ]
+}

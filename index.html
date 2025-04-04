@@ -8,38 +8,71 @@
     </head>
     <body>
         <h2>Group Runs</h2>
-        <div id="output"></div>
+        <div id="output"></div> <!-- Correct id is "output" here -->
     
         <script>
-            // Function to fetch and display JSON data
-            async function loadJSON() {
+            async function LoadJson() {
                 try {
-                    let response = await fetch('run_info.json'); // Fetch JSON file
-                    let data = await response.json(); // Convert response to JSON
-                    displayJSON(data); // Call function to display data
+                    console.log("Fetching JSON...");
+                    const response = await fetch("run_info.json");
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const jsonData = await response.json();
+                    console.log("Loaded JSON data:", jsonData); // Log the data to console
+                    displayJSON(jsonData);
                 } catch (error) {
                     console.error("Error loading JSON:", error);
+                    document.getElementById("output").innerHTML = `<p>Error loading data: ${error.message}. Check the console.</p>`;
                 }
             }
-            
-            
 
-            // Function to display JSON in HTML
-            function displayJSON(data) {
-                
-                // Sort events by date (soonest to latest)
-                data.sort((a, b) => new Date(a.date) - new Date(b.date));
-                let outputDiv = document.getElementById("output");
-                let html = "<ul>";
-                data.forEach(run => {
-                    html += `<li><strong>${run.name}</strong> with <strong><a href="${run.club.website}" target = "_blank">${run.club.name}</a> </strong> - <a href="${run.location}" target = "_blank"> Run starts here</a> on ${run.date} at ${run.time}</li>`;
+            function displayJSON(jsonData) {
+                const outputDiv = document.getElementById("output"); // Corrected id
+                outputDiv.innerHTML = ""; // Clear any existing content
+
+                if (!jsonData.clubs || jsonData.clubs.length === 0) {
+                    console.log("No clubs found in JSON.");
+                    outputDiv.innerHTML = "<p>No run clubs found in the data.</p>";
+                    return;
+                }
+
+                console.log(`Found ${jsonData.clubs.length} clubs.`);
+
+                jsonData.clubs.forEach(club => {
+                    console.log(`Processing club: ${club.name}`);
+
+                    let clubDiv = document.createElement("div");
+                    clubDiv.innerHTML = `<h2>${club.name}</h2>
+                        <p><a href="${club.website}" target="_blank">Visit Website</a></p>
+                        <ul>`;
+
+                    if (!club.events || club.events.length === 0) {
+                        console.log(`No events found for club: ${club.name}`);
+                        clubDiv.innerHTML += `<p>No events available.</p>`;
+                    } else {
+                        club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                        club.events.forEach(event => {
+                            console.log(`Adding event: ${event.name} on ${event.date}`);
+
+                            clubDiv.innerHTML += `<li>
+                                <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
+                                <a href="${event.location}" target="_blank">Event Location</a><br>
+                                <em>Distance Options: ${event.distance_options ? event.distance_options.join(", ") : "N/A"}</em>
+                            </li>`;
+                        });
+                    }
+
+                    clubDiv.innerHTML += `</ul>`;
+                    outputDiv.appendChild(clubDiv);
                 });
-                html += "</ul>";
-                outputDiv.innerHTML = html;
             }
-    
+
             // Load JSON when the page loads
-            loadJSON();
+            document.addEventListener("DOMContentLoaded", LoadJson);
         </script>
     </body>
 </html>
