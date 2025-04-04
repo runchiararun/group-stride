@@ -16,32 +16,39 @@
 </head>
 <body>
 
+    <!-- Left panel: filter dropdown and event list -->
     <div id="event-list">
       <h2>Group Runs</h2>
+      
+      <!-- Dropdown to filter by club -->
       <label for="clubFilter">Filter by Run Club:</label>
       <select id="clubFilter">
         <option value="all">All Clubs</option>
       </select>
+  
+      <!-- Event list will be inserted here -->
       <div id="output"></div>
     </div>
   
+    <!-- Right panel: Leaflet map -->
     <div id="map"></div>
   
     <script>
-      let map;
-      let allClubs = [];
-      let markers = [];
+      let map;            // Global Leaflet map object
+      let allClubs = [];  // Store all clubs from JSON
+      let markers = [];   // Store current map markers so we can clear them later
   
+      // Load JSON data and initialize the map & UI
       async function LoadJson() {
         try {
-          const response = await fetch("run_info.json");
+          const response = await fetch("run_info.json"); // Load run info JSON
           if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const jsonData = await response.json();
   
-          allClubs = jsonData.clubs || [];
-          initMap();
-          populateClubFilter(allClubs);
-          displayData(allClubs);
+          allClubs = jsonData.clubs || [];  // Save all club data
+          initMap();                        // Create the map
+          populateClubFilter(allClubs);     // Add club names to filter dropdown
+          displayData(allClubs);            // Display all events and map markers
   
         } catch (error) {
           console.error("Error loading JSON:", error);
@@ -49,14 +56,18 @@
         }
       }
   
+      // Create and configure the Leaflet map
       function initMap() {
-        map = L.map('map').setView([39.5, -98.35], 4); // Center on USA
+        // Center the map on the USA
+        map = L.map('map').setView([39.5, -98.35], 4);
   
+        // Load map tiles from OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors'
         }).addTo(map);
       }
   
+      // Fill the dropdown menu with run club names
       function populateClubFilter(clubs) {
         const filter = document.getElementById("clubFilter");
   
@@ -67,34 +78,46 @@
           filter.appendChild(option);
         });
   
+        // When the user selects a club, update list + map
         filter.addEventListener("change", () => {
           const selected = filter.value;
-          const filteredClubs = selected === "all" ? allClubs : allClubs.filter(c => c.name === selected);
+  
+          // Show all clubs or just the selected one
+          const filteredClubs = selected === "all"
+            ? allClubs
+            : allClubs.filter(c => c.name === selected);
+  
           displayData(filteredClubs);
         });
       }
   
+      // Remove all markers from the map
       function clearMarkers() {
         markers.forEach(marker => map.removeLayer(marker));
         markers = [];
       }
   
+      // Display events in the list and as map markers
       function displayData(clubs) {
         const outputDiv = document.getElementById("output");
-        outputDiv.innerHTML = "";
-        clearMarkers();
+        outputDiv.innerHTML = "";  // Clear current list
+        clearMarkers();            // Clear map markers
   
         clubs.forEach(club => {
           const section = document.createElement("div");
           section.classList.add("club-section");
   
+          // Add club title and link
           section.innerHTML = `<h3>${club.name}</h3>
             <p><a href="${club.website}" target="_blank">Visit Website</a></p><ul>`;
   
+          // If the club has events, list them and map them
           if (club.events && club.events.length > 0) {
+            // Sort events by date
             club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
   
             club.events.forEach(event => {
+              // Add event to the list
               section.innerHTML += `
                 <li>
                   <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
@@ -103,6 +126,7 @@
                 </li>
               `;
   
+              // Add marker to map if it has coordinates
               if (event.latitude && event.longitude) {
                 const popupContent = `
                   <strong>${event.name}</strong><br>
@@ -114,7 +138,7 @@
                   .addTo(map)
                   .bindPopup(popupContent);
   
-                markers.push(marker);
+                markers.push(marker); // Save marker so we can remove it later
               }
             });
   
@@ -127,6 +151,7 @@
         });
       }
   
+      // Load everything once the page is ready
       document.addEventListener("DOMContentLoaded", LoadJson);
     </script>
   </body>
