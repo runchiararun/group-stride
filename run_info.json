@@ -7,14 +7,14 @@
             "events": [
                 {
                     "name": "Wednesday City Run",
-                    "date": "2025-04-02",
+                    "date": "04-03-2025",
                     "time": "06:30 PM",
                     "location": "https://www.google.com/maps/place/Allegheny+City+Brewing/",
                     "distance_options": ["3 miles", "5 miles"]
                 },
                 {
                     "name": "Monday Track Attack",
-                    "date": "2025-03-31",
+                    "date": "03-31-2025",
                     "time": "06:30 PM",
                     "location": "https://www.google.com/maps/place/1+Overlook+Dr/",
                     "distance_options": ["Varied based on the workout!"]
