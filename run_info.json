@@ -27,7 +27,13 @@
           ],
           "latitude": 40.475114976148156,
           "longitude": -80.0250039890678
-        },
+        }
+      ]
+    },
+    {
+      "name": "Kool",
+      "website": "https://www.cityofbridgesrunclub.com/",
+      "events": [
         {
           "name": "Wednesday City Run",
           "date": "4/9/25",

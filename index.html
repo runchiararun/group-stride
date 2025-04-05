@@ -11,50 +11,6 @@
   <!-- Leaflet CSS for interactive maps -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <style>
-    /* Set up split layout: list on left, map on right */
-    body {
-      display: flex;
-      font-family: sans-serif;
-      margin: 0;
-    }
-
-    #event-list {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      max-height: 100vh;
-    }
-
-    #map {
-      flex: 1;
-      height: 100vh;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    .club-section {
-      margin-bottom: 30px;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 15px;
-    }
-
-    select {
-      margin-bottom: 10px;
-      padding: 6px;
-      font-size: 16px;
-      margin-right: 10px;
-    }
-  </style>
 </head>
 <body>
 
@@ -178,6 +134,9 @@
       outputDiv.innerHTML = ""; // Clear previous list
       clearMarkers();           // Clear previous markers
 
+      // Create a feature group to hold markers
+      let markersGroup = L.featureGroup();
+
       // For each club with events
       clubs.forEach(club => {
         const section = document.createElement("div");
@@ -212,13 +171,19 @@
               .addTo(map)
               .bindPopup(popupContent);
 
-            markers.push(marker);
+            // Add marker to the feature group
+            markersGroup.addLayer(marker);
           }
         });
 
         section.innerHTML += `</ul>`;
         outputDiv.appendChild(section);
       });
+
+      // After adding all markers, fit the map to show all markers
+      if (markersGroup.getBounds().isValid()) {
+        map.fitBounds(markersGroup.getBounds());
+      }
     }
 
     // Run when page finishes loading
