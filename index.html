@@ -154,8 +154,8 @@
           section.innerHTML += `
             <li>
               <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
-              <a href="${event.location}" target="_blank">Event Location</a><br>
-              <em>Distance: ${event.distance_options?.join(", ") || "N/A"}</em>
+              <em>Distance: ${event.distance_options?.join(", ") || "N/A"}</em><br>
+              <a href="${event.address}" target="_blank">Event Location</a> - <a href="${event.register}" target="_blank">Register here!</a><br>
             </li>
           `;
 
@@ -164,7 +164,7 @@
             const popupContent = `
               <strong>${event.name}</strong><br>
               ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
-              <a href="${event.location}" target="_blank">Location</a>
+              <a href="${event.address}" target="_blank">Location</a>
             `;
 
             const marker = L.marker([event.latitude, event.longitude])
