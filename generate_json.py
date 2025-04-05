@@ -17,7 +17,7 @@ def csv_to_json(csv_file_path, json_file_path):
                 "date": row['event_date'],
                 "time": row['event_time'],
                 "location": row['event_location'],
-                "description:" row['event_description'],
+                "description": row['event_description'],
                 "distance_options": [d.strip() for d in row['event_distances'].split(',')]
             }
 
