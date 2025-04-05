@@ -3,156 +3,226 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Display JSON in HTML</title>
-  <link rel="stylesheet" href="style.css">
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet/dist/leaflet.css"
-    />
+  <title>Group Runs Map</title>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js">
-    </script>
+  <!-- External stylesheet (optional) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet CSS for interactive maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    /* Set up split layout: list on left, map on right */
+    body {
+      display: flex;
+      font-family: sans-serif;
+      margin: 0;
+    }
+
+    #event-list {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    #map {
+      flex: 1;
+      height: 100vh;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .club-section {
+      margin-bottom: 30px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 15px;
+    }
+
+    select {
+      margin-bottom: 10px;
+      padding: 6px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Left panel: filter dropdown and event list -->
-    <div id="event-list">
-      <h2>Group Runs</h2>
-      
-      <!-- Dropdown to filter by club -->
-      <label for="clubFilter">Filter by Run Club:</label>
-      <select id="clubFilter">
-        <option value="all">All Clubs</option>
-      </select>
-  
-      <!-- Event list will be inserted here -->
-      <div id="output"></div>
-    </div>
-  
-    <!-- Right panel: Leaflet map -->
-    <div id="map"></div>
-  
-    <script>
-      let map;            // Global Leaflet map object
-      let allClubs = [];  // Store all clubs from JSON
-      let markers = [];   // Store current map markers so we can clear them later
-  
-      // Load JSON data and initialize the map & UI
-      async function LoadJson() {
-        try {
-          const response = await fetch("run_info.json"); // Load run info JSON
-          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-          const jsonData = await response.json();
-  
-          allClubs = jsonData.clubs || [];  // Save all club data
-          initMap();                        // Create the map
-          populateClubFilter(allClubs);     // Add club names to filter dropdown
-          displayData(allClubs);            // Display all events and map markers
-  
-        } catch (error) {
-          console.error("Error loading JSON:", error);
-          document.getElementById("output").innerHTML = `<p>Error loading data: ${error.message}</p>`;
-        }
+  <!-- LEFT PANEL: Filters + Event List -->
+  <div id="event-list">
+    <h2>Group Runs</h2>
+
+    <!-- Filter by run club name -->
+    <label for="clubFilter">Run Club:</label>
+    <select id="clubFilter">
+      <option value="all">All Clubs</option>
+    </select>
+
+    <!-- Filter by how soon the event happens -->
+    <label for="daysFilter">Show Events:</label>
+    <select id="daysFilter">
+      <option value="all">All Upcoming</option>
+      <option value="7">Next 7 Days</option>
+      <option value="14">Next 14 Days</option>
+      <option value="30">Next 30 Days</option>
+    </select>
+
+    <!-- Event list will be generated here -->
+    <div id="output"></div>
+  </div>
+
+  <!-- RIGHT PANEL: Interactive Map -->
+  <div id="map"></div>
+
+  <script>
+    // Variables to hold map, data, and marker objects
+    let map;
+    let allClubs = [];
+    let markers = [];
+
+    // Load JSON data when the page loads
+    async function LoadJson() {
+      try {
+        const response = await fetch("run_info.json"); // Fetch run info file
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const jsonData = await response.json();
+
+        allClubs = jsonData.clubs || []; // Save the club data
+
+        initMap();                   // Create the map
+        populateClubFilter(allClubs); // Fill the club dropdown
+        setupFilterListeners();      // Add filter listeners
+        applyFilters();              // Initial display
+
+      } catch (error) {
+        console.error("Error loading JSON:", error);
+        document.getElementById("output").innerHTML =
+          `<p>Error loading data: ${error.message}</p>`;
       }
-  
-      // Create and configure the Leaflet map
-      function initMap() {
-        // Center the map on the USA
-        map = L.map('map').setView([39.5, -98.35], 4);
-  
-        // Load map tiles from OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-      }
-  
-      // Fill the dropdown menu with run club names
-      function populateClubFilter(clubs) {
-        const filter = document.getElementById("clubFilter");
-  
-        clubs.forEach(club => {
-          const option = document.createElement("option");
-          option.value = club.name;
-          option.textContent = club.name;
-          filter.appendChild(option);
-        });
-  
-        // When the user selects a club, update list + map
-        filter.addEventListener("change", () => {
-          const selected = filter.value;
-  
-          // Show all clubs or just the selected one
-          const filteredClubs = selected === "all"
-            ? allClubs
-            : allClubs.filter(c => c.name === selected);
-  
-          displayData(filteredClubs);
-        });
-      }
-  
-      // Remove all markers from the map
-      function clearMarkers() {
-        markers.forEach(marker => map.removeLayer(marker));
-        markers = [];
-      }
-  
-      // Display events in the list and as map markers
-      function displayData(clubs) {
-        const outputDiv = document.getElementById("output");
-        outputDiv.innerHTML = "";  // Clear current list
-        clearMarkers();            // Clear map markers
-  
-        clubs.forEach(club => {
-          const section = document.createElement("div");
-          section.classList.add("club-section");
-  
-          // Add club title and link
-          section.innerHTML = `<h3>${club.name}</h3>
-            <p><a href="${club.website}" target="_blank">Visit Website</a></p><ul>`;
-  
-          // If the club has events, list them and map them
-          if (club.events && club.events.length > 0) {
-            // Sort events by date
-            club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
-  
-            club.events.forEach(event => {
-              // Add event to the list
-              section.innerHTML += `
-                <li>
-                  <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
-                  <a href="${event.location}" target="_blank">Event Location</a><br>
-                  <em>Distance: ${event.distance_options?.join(", ") || "N/A"}</em>
-                </li>
-              `;
-  
-              // Add marker to map if it has coordinates
-              if (event.latitude && event.longitude) {
-                const popupContent = `
-                  <strong>${event.name}</strong><br>
-                  ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
-                  <a href="${event.location}" target="_blank">Location</a>
-                `;
-  
-                const marker = L.marker([event.latitude, event.longitude])
-                  .addTo(map)
-                  .bindPopup(popupContent);
-  
-                markers.push(marker); // Save marker so we can remove it later
-              }
-            });
-  
-            section.innerHTML += `</ul>`;
-          } else {
-            section.innerHTML += `<p>No events available.</p>`;
+    }
+
+    // Initialize Leaflet map and center on the USA
+    function initMap() {
+      map = L.map('map').setView([39.5, -98.35], 4); // Approximate US center
+
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+    }
+
+    // Fill the club filter dropdown
+    function populateClubFilter(clubs) {
+      const filter = document.getElementById("clubFilter");
+
+      clubs.forEach(club => {
+        const option = document.createElement("option");
+        option.value = club.name;
+        option.textContent = club.name;
+        filter.appendChild(option);
+      });
+    }
+
+    // Attach filter dropdown listeners
+    function setupFilterListeners() {
+      document.getElementById("clubFilter").addEventListener("change", applyFilters);
+      document.getElementById("daysFilter").addEventListener("change", applyFilters);
+    }
+
+    // Remove all markers from the map
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+
+    // Apply selected filters and display results
+    function applyFilters() {
+      const selectedClub = document.getElementById("clubFilter").value;
+      const selectedDays = document.getElementById("daysFilter").value;
+      const today = new Date();
+
+      // Filter clubs and their events
+      const filteredClubs = allClubs
+        .filter(club => selectedClub === "all" || club.name === selectedClub) // Club match
+        .map(club => {
+          const filteredEvents = (club.events || []).filter(event => {
+            const eventDate = new Date(event.date);
+            if (selectedDays === "all") return eventDate >= today; // Future only
+            const futureDate = new Date();
+            futureDate.setDate(today.getDate() + parseInt(selectedDays));
+            return eventDate >= today && eventDate <= futureDate;
+          });
+
+          // Return same club, but filtered events
+          return { ...club, events: filteredEvents };
+        })
+        .filter(club => club.events.length > 0); // Only clubs with events
+
+      // Show filtered results
+      displayData(filteredClubs);
+    }
+
+    // Render event list and add markers to map
+    function displayData(clubs) {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = ""; // Clear previous list
+      clearMarkers();           // Clear previous markers
+
+      // For each club with events
+      clubs.forEach(club => {
+        const section = document.createElement("div");
+        section.classList.add("club-section");
+
+        // Club header and link
+        section.innerHTML = `<h3>${club.name}</h3>
+          <p><a href="${club.website}" target="_blank">Visit Website</a></p><ul>`;
+
+        // Sort club events by date
+        club.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Add each event to the list and map
+        club.events.forEach(event => {
+          section.innerHTML += `
+            <li>
+              <strong>${event.name}</strong> - ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
+              <a href="${event.location}" target="_blank">Event Location</a><br>
+              <em>Distance: ${event.distance_options?.join(", ") || "N/A"}</em>
+            </li>
+          `;
+
+          // Only add a map marker if location has coordinates
+          if (event.latitude && event.longitude) {
+            const popupContent = `
+              <strong>${event.name}</strong><br>
+              ${new Date(event.date).toLocaleDateString()} at ${event.time}<br>
+              <a href="${event.location}" target="_blank">Location</a>
+            `;
+
+            const marker = L.marker([event.latitude, event.longitude])
+              .addTo(map)
+              .bindPopup(popupContent);
+
+            markers.push(marker);
           }
-  
-          outputDiv.appendChild(section);
         });
-      }
-  
-      // Load everything once the page is ready
-      document.addEventListener("DOMContentLoaded", LoadJson);
-    </script>
-  </body>
-  </html>
+
+        section.innerHTML += `</ul>`;
+        outputDiv.appendChild(section);
+      });
+    }
+
+    // Run when page finishes loading
+    document.addEventListener("DOMContentLoaded", LoadJson);
+  </script>
+</body>
+</html>

@@ -5,46 +5,54 @@
       "website": "https://www.cityofbridgesrunclub.com/",
       "events": [
         {
-          "name": "Saturday Run",
-          "date": "4/5/25",
-          "time": "10:00",
-          "location": "SouthSide Trail",
+          "name": "Monday Track Attack",
+          "date": "4/7/25",
+          "time": "18:30",
+          "location": "1 Overlook Dr, Pittsburgh, PA 15217, USA",
+          "description": "Weekly workout assigned by Coach Kim",
           "distance_options": [
-            "1 mile",
-            "3 miles"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "CBC",
-      "website": "https://www.cityofbridgesrunclub.com/",
-      "events": [
+            "3+ miles"
+          ],
+          "latitude": 40.432504911530174,
+          "longitude": -79.94134152941747
+        },
         {
-          "name": "Saturday Run",
-          "date": "4/6/25",
-          "time": "11:00",
-          "location": "SouthSide Trail",
+          "name": "Tuesday Trail Run",
+          "date": "4/8/25",
+          "time": "19:30",
+          "location": "4905 Grand Ave, Pittsburgh, PA 15225, USA",
+          "description": "Easy run with 3-5 mile options",
           "distance_options": [
             "3 miles 5 miles"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Kool",
-      "website": "",
-      "events": [
+          ],
+          "latitude": 40.475114976148156,
+          "longitude": -80.0250039890678
+        },
         {
-          "name": "Saturday Run",
-          "date": "4/7/25",
-          "time": "12:00",
-          "location": "SouthSide Trail",
+          "name": "Wednesday City Run",
+          "date": "4/9/25",
+          "time": "18:30",
+          "location": "5113 Penn Ave, Pittsburgh, PA 15224, USA",
+          "description": "Easy run with 3-5 mile options",
+          "distance_options": [
+            "3 miles 5 miles"
+          ],
+          "latitude": 40.46498054740601,
+          "longitude": -79.94231402998365
+        },
+        {
+          "name": "Saturday Long Run",
+          "date": "4/12/25",
+          "time": "8:00",
+          "location": "1 Third Ave, Pittsburgh, PA 15222, USA",
+          "description": "Long run",
           "distance_options": [
             "3 miles",
-            "8 miles",
-            "11 mile"
-          ]
+            "11 miles",
+            "20 miles"
+          ],
+          "latitude": 40.4397837,
+          "longitude": -80.0037794
         }
       ]
     }
