@@ -2,16 +2,40 @@ import csv
 import json
 from collections import defaultdict
 
-# Use defaultdict to group runs by club
-run_clubs = defaultdict(list)
+def csv_to_json(csv_file_path, json_file_path):
+    clubs = defaultdict(lambda: {"website": "", "events": []})
 
-with open("run_data.csv", newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        club = row.pop("club")  # Remove 'club' key and save value
-        run_clubs[club].append(row)
+    with open(csv_file_path, mode='r', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file)
+        
+        for row in reader:
+            club_name = row['club_name']
+            clubs[club_name]['website'] = row['club_website']
+            
+            event = {
+                "name": row['event_name'],
+                "date": row['event_date'],
+                "time": row['event_time'],
+                "location": row['event_location'],
+                "description:" row['event_description'],
+                "distance_options": [d.strip() for d in row['event_distances'].split(',')]
+            }
 
-with open("run_info.json", "w") as jsonfile:
-    json.dump(run_clubs, jsonfile, indent=4)
+            clubs[club_name]['events'].append(event)
 
-print("✅ run_info.json created and grouped by run club!")
+    # Convert to desired format
+    result = {
+        "clubs": [
+            {
+                "name": name,
+                "website": data['website'],
+                "events": data['events']
+            } for name, data in clubs.items()
+        ]
+    }
+
+    with open(json_file_path, mode='w', encoding='utf-8') as json_file:
+        json.dump(result, json_file, indent=2)
+
+# Example usage
+csv_to_json('group_run_events.csv', 'run_info.json')

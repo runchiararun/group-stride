@@ -1,54 +1,52 @@
 {
-    "clubs": [
+  "clubs": [
+    {
+      "name": "CBRC",
+      "website": "https://www.cityofbridgesrunclub.com/",
+      "events": [
         {
-            "name": "City Of Bridges Run Club",
-            "contact_email": "cityofbridgesrunclub@gmail.com",
-            "website": "https://www.cityofbridgesrunclub.com",
-            "events": [
-                {
-                    "name": "Saturday Morning Run",
-                    "date": "2025-04-05",
-                    "time": "08:00",
-                    "location": "https://maps.google.com/?q=Central+Park",
-                    "latitude": 40.785091,
-                    "longitude": -73.968285,
-                    "distance_options": ["5K", "10K"]
-                },
-                {
-                    "name": "Saturday Morning Run",
-                    "date": "2025-04-05",
-                    "time": "08:00",
-                    "location": "https://maps.google.com/?q=Central+Park",
-                    "latitude": 30.785091,
-                    "longitude": -60.968285,
-                    "distance_options": ["5K", "10K"]
-                }
-            ]
-        },
-        {
-            "name": "Yinz Run Club",
-            "contact_email": "cityofbridgesrunclub@gmail.com",
-            "website": "https://www.cityofbridgesrunclub.com",
-            "events": [
-                {
-                    "name": "Saturday Morning Run",
-                    "date": "2025-04-05",
-                    "time": "08:00",
-                    "location": "https://maps.google.com/?q=Central+Park",
-                    "latitude": 43.785091,
-                    "longitude": -73.968285,
-                    "distance_options": ["5K", "10K"]
-                },
-                {
-                    "name": "Saturday Morning Run",
-                    "date": "2025-04-05",
-                    "time": "08:00",
-                    "location": "https://maps.google.com/?q=Central+Park",
-                    "latitude": 53.785091,
-                    "longitude": -60.968285,
-                    "distance_options": ["5K", "10K"]
-                }
-            ]
+          "name": "Saturday Run",
+          "date": "4/5/25",
+          "time": "10:00",
+          "location": "SouthSide Trail",
+          "distance_options": [
+            "1 mile",
+            "3 miles"
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "name": "CBC",
+      "website": "https://www.cityofbridgesrunclub.com/",
+      "events": [
+        {
+          "name": "Saturday Run",
+          "date": "4/6/25",
+          "time": "11:00",
+          "location": "SouthSide Trail",
+          "distance_options": [
+            "3 miles 5 miles"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kool",
+      "website": "",
+      "events": [
+        {
+          "name": "Saturday Run",
+          "date": "4/7/25",
+          "time": "12:00",
+          "location": "SouthSide Trail",
+          "distance_options": [
+            "3 miles",
+            "8 miles",
+            "11 mile"
+          ]
+        }
+      ]
+    }
+  ]
 }
