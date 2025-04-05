@@ -95,10 +95,10 @@
       document.getElementById("daysFilter").addEventListener("change", applyFilters);
     }
 
-    // Remove all markers from the map
+    // Remove all markers from the map and the markers array
     function clearMarkers() {
-      markers.forEach(marker => map.removeLayer(marker));
-      markers = [];
+      markers.forEach(marker => map.removeLayer(marker)); // Remove from map
+      markers = []; // Clear the markers array
     }
 
     // Apply selected filters and display results
@@ -171,8 +171,9 @@
               .addTo(map)
               .bindPopup(popupContent);
 
-            // Add marker to the feature group
+            // Add marker to the feature group and to the markers array
             markersGroup.addLayer(marker);
+            markers.push(marker); // Store the marker in the array
           }
         });
 
@@ -184,6 +185,9 @@
       if (markersGroup.getBounds().isValid()) {
         map.fitBounds(markersGroup.getBounds());
       }
+
+      // Add all the filtered markers to the map
+      markersGroup.addTo(map);
     }
 
     // Run when page finishes loading
